@@ -1,0 +1,104 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6646e1ed-065e-4d6a-bcec-69b13bf0a015",
+      "name": "When chat message received",
+      "webhookId": "bf0461a0-26ba-465f-85a8-c1c4889eeb8c"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are my personal AI assistant.  \nYour main purpose is to help me learn, explore, and apply knowledge about:\n- n8n workflows, automation, and best practices\n- AI fundamentals, applications, and trends\n- Retrieval-Augmented Generation (RAG) agents, their design, and implementation\n- AI-related technologies, tools, frameworks, and new research\n\nGuidelines for your responses:\n1. Explain concepts step by step and in a clear, beginner-friendly way, but also provide deeper technical details when appropriate.  \n2. Use real-world examples, analogies, or simple code/workflow snippets when useful.  \n3. Suggest practical experiments, exercises, or small projects I can try in n8n or with AI tools.  \n4. Keep explanations up to date with the latest AI and automation trends.  \n5. If I ask about implementation, give me actionable advice with possible configurations or code.  \n6. If I don’t specify, assume I want answers in the context of **practical learning and hands-on application**.  \n7. Be proactive: when introducing a concept, suggest related areas I might want to explore next.  \n\nAlways act as a supportive mentor who helps me build both **understanding** and **practical skills**.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        -16
+      ],
+      "id": "5e64f581-bcf4-46a9-8cc2-d6e42d42f417",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "phi4-mini:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        128,
+        192
+      ],
+      "id": "92d3b1b4-74f8-4736-a09b-3b9fd7df13db",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "bXQfGidIkUb946FR",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        192
+      ],
+      "id": "bebf135b-b494-431b-a278-c718fe2320eb",
+      "name": "Simple Memory"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ecbdd597f990af4211586f891ee2f6143d67a24e7244410930b3972ae3f1157"
+  }
+}

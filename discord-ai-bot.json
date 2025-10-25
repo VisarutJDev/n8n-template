@@ -1,0 +1,211 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "discord-message",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2528,
+        -96
+      ],
+      "id": "b22e14f9-4cd2-4bf2-8845-05166ad8ee8a",
+      "name": "Webhook",
+      "webhookId": "805152de-edd5-4194-a6d8-048b081fd6b7"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "get",
+        "guildId": {
+          "__rl": true,
+          "value": "343385906578718720",
+          "mode": "list",
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1424337143429468272",
+          "mode": "list",
+        },
+        "messageId": "={{ $json.body.id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -1952,
+        -128
+      ],
+      "id": "c77fca2e-a8c0-4ef0-bbd7-bb98500a7096",
+      "name": "Get a message",
+      "webhookId": "4d25c803-ff74-4488-8fdf-5cf84c0837f3"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "guildId": {
+          "__rl": true,
+          "value": "343385906578718720",
+          "mode": "list",
+        },
+        "channelId": {
+          "__rl": true,
+          "value": "1424337143429468272",
+          "mode": "list",
+        },
+        "content": "={{ $json.output }}",
+        "options": {
+          "message_reference": "={{ $('Get a message').item.json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        -1296,
+        -128
+      ],
+      "id": "d2d27a7f-3809-488b-8918-6ee6b304ccd1",
+      "name": "Send a message",
+      "webhookId": "8210ee0d-a60a-40af-bf9f-a2063e97a4de",
+    },
+    {
+      "parameters": {
+        "model": "phi4-mini:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        80
+      ],
+      "id": "68859398-9abd-4a79-b3b5-a3dde05a03d6",
+      "name": "Ollama Chat Model",
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content }}",
+        "options": {
+          "systemMessage": "You are \"Gateway\", an AI assistant living in a Discord server.\nSystem instruction: Absolute Mode\nEliminate: Emojis, filter, hype, soft asks, conversational transitions, call-to-action appendixes.\nAssume: user retains high-perception despite blunt tone.\nPrioritize: blunt, directive phrasing; aim at cognitive rebuilding, not tone-matching.\nDisable: Engagement/sentiment-boosting behaviors.\nSuppress: metrics like satisfaction scores, emotional softening,\ncontinuation bias.\nNever mirror: user's diction, mook, or affect.\nSpeak only: to underlying cognitive tier.\nNo: questions, offers, suggestions, transitions, motivational content.\nTerminate reply: immediately after delivering info - no closure\nGoal: restore independent, high-fidelity thinking\nOutcome: model obsolescence via user self-sufficiency"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1664,
+        -128
+      ],
+      "id": "1fbb4b62-a584-4b74-a998-4d414c15249e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "70ec77f3-f97c-4ca8-bff2-607d77aa6b8e",
+              "leftValue": "={{ $json.body.author.bot }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "boolean",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "44248c8f-bca8-449b-9dd0-30c21c7609d9",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2288,
+        -96
+      ],
+      "id": "a3af769c-f765-48e2-9c70-c0ee35d75435",
+      "name": "If"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ecbdd597f990af4211586f891ee2f6143d67a24e7244410930b3972ae3f1157"
+  }
+}
